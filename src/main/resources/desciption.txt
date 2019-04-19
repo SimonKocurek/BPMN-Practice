@@ -1,0 +1,13 @@
+Implementačné poznámky:
+	- pri všetkých UserTask-och je potrebné na konzolu vypísať údaje, ktoré sú potrebné na rozhodnutie (napr. ktorý používateľ žiada o úver, akú výšku úveru žiada a pod.), aby sa zodpovedná osoba mohla kvalifikovane rozhodnúť
+	- následne je potrebné z konzoly načítať všetky údaje, ktoré zodpovedná osoba v danom UserTasku má vyplniť (napr. upravenú výšku sumy, rozhodnutie, či schvaľujem alebo nie a pod.)
+	- ak nejaký UserTask má vykonávať "vedúci zamestnanca", "koordinátori zamestnanca", "manažéri spoločnosti", "riaditeľ spoločnosti" a pod., tak loginy príslušných osôb je potrebné získať volaním vhodne navrhnutej metódy nejakého externého objektu ako bol pri cvičeniach napr. OrganizacnaStruktura a pod. 
+	- ak je niekde uvedené, že je potrebné notifikovať zamestnanca a pod., tak stačí výpis na konzolu typu "Notifikacia pre pouzivatela [<login>]: <telo_notifikacie>"
+
+⦁	Elektronický recept
+
+Lekár vyplní formulár – elektronický predpis pre pacienta, kde vyplní cenu lieku. 
+⦁	Ak je cena lieku vyššia ako 100 Eur, najprv kontrolór poisťovne schváli, resp. neschváli liek pre daného pacienta. V prípade neschválenia lekár vyberie iný liek, resp. ukončí celé objednanie. 
+⦁	V prípade, že je cena lieku nižšia alebo rovná 100 Eur, sa automaticky pokračuje ďalej.
+Súčasne prebieha platba poisťovne a platba pacientom, pričom poisťovňa uhrádza 2/3 ceny lieku a pacient 1/3 (implementovať ako script task, ktorý vypíše na konzolu: Platba XX,XX Eur prebehla.) V prípade, ak jedna z platieb neprejde do 30 dní, prebehne notifikácia zúčastnených a proces je ukončený.
+Ak obe platby prebehli úspešne, pacient potvrdí prevzatie lieku a proces končí.
