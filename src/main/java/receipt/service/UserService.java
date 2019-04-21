@@ -112,11 +112,6 @@ public class UserService {
             return INVALID_CODE;
         }
 
-//         Clear scanner input
-//        while (scanner.hasNext()) {
-//            scanner.next();
-//        }
-
         return receiptCode;
     }
 
