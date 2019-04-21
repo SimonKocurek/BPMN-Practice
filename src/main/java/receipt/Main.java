@@ -18,11 +18,13 @@ public class Main {
                 .createStandaloneInMemProcessEngineConfiguration();
 
         try {
-            engine = configuration.buildProcessEngine();
+            engine = configuration
+                    .setAsyncExecutorActivate(true) // For timer events
+                    .buildProcessEngine();
 
             engine.getRepositoryService()
                     .createDeployment()
-                    .addClasspathResource("ReceiptProcess.bpmn")
+                    .addClasspathResource("ReceiptProcess.bpmn20.xml")
                     .key("receipt_process")
                     .deploy();
 
