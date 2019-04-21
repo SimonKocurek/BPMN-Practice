@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test">
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://flowable.org/test">
   <process id="receipt_process" name="ReceiptProcess" isExecutable="true">
     <userTask id="receipt_fix" name="Fix Receipt" flowable:assignee="Doctor">
       <extensionElements>
@@ -60,12 +64,8 @@
     </sequenceFlow>
     <sequenceFlow id="flow13" sourceRef="insurance_pay" targetRef="parallelgateway2"></sequenceFlow>
     <sequenceFlow id="flow16" sourceRef="patient_pay" targetRef="parallelgateway2"></sequenceFlow>
-    <scriptTask id="sid-DF1A1929-AE1D-40E2-B082-CDD3B655925E" flowable:async="true" flowable:exclusive="false" flowable:autoStoreVariables="false">
-      <script><![CDATA[java.lang.System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");]]></script>
-    </scriptTask>
-    <sequenceFlow id="sid-D3FE2092-8495-4A6C-9B4A-C0CE6364CF4A" sourceRef="boundarytimer1" targetRef="sid-DF1A1929-AE1D-40E2-B082-CDD3B655925E"></sequenceFlow>
-    <sequenceFlow id="flow23" sourceRef="boundarytimer1" targetRef="_ZQbDSWRkEem8rNlhyjeRRw"></sequenceFlow>
     <sequenceFlow id="flow22" sourceRef="boundarytimer2" targetRef="_ZQbDSWRkEem8rNlhyjeRRw"></sequenceFlow>
+    <sequenceFlow id="flow23" sourceRef="boundarytimer1" targetRef="_ZQbDSWRkEem8rNlhyjeRRw"></sequenceFlow>
     <sequenceFlow id="flow20" sourceRef="parallelgateway2" targetRef="drug_received_confirm"></sequenceFlow>
     <sequenceFlow id="flow3" name="Check Required" sourceRef="exclusivegateway1" targetRef="controllor_check">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${drug.price > 100}]]></conditionExpression>
@@ -133,9 +133,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_ZQbDQ2RkEem8rNlhyjeRRw" id="BPMNShape__ZQbDQ2RkEem8rNlhyjeRRw">
         <omgdc:Bounds height="40.0" width="40.0" x="1507.0" y="328.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="sid-DF1A1929-AE1D-40E2-B082-CDD3B655925E" id="BPMNShape_sid-DF1A1929-AE1D-40E2-B082-CDD3B655925E">
-        <omgdc:Bounds height="80.0" width="100.0" x="1110.0" y="533.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
         <omgdi:waypoint x="50.94999840413678" y="344.0"></omgdi:waypoint>
@@ -223,10 +220,6 @@
       <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
         <omgdi:waypoint x="1037.17084779837" y="520.3307405337619"></omgdi:waypoint>
         <omgdi:waypoint x="1231.0170547865168" y="520.9375976985237"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="sid-D3FE2092-8495-4A6C-9B4A-C0CE6364CF4A" id="BPMNEdge_sid-D3FE2092-8495-4A6C-9B4A-C0CE6364CF4A">
-        <omgdi:waypoint x="1037.1386199188369" y="526.436539419361"></omgdi:waypoint>
-        <omgdi:waypoint x="1109.9999999999998" y="554.0502360510818"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_ZQbDSGRkEem8rNlhyjeRRw" id="BPMNEdge__ZQbDSGRkEem8rNlhyjeRRw">
         <omgdi:waypoint x="1270.8661764705432" y="520.9159663865546"></omgdi:waypoint>
