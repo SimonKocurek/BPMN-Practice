@@ -56,14 +56,14 @@
       <bpmn2:outgoing>flow23</bpmn2:outgoing>
       <bpmn2:outputSet id="_T2tX42KIEemLuYD1bjHUeQ"/>
       <bpmn2:timerEventDefinition id="boundarytimer1_ED_1">
-        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_T2tX5GKIEemLuYD1bjHUeQ">P30D</bpmn2:timeDuration>
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_T2tX5GKIEemLuYD1bjHUeQ">PT30S</bpmn2:timeDuration>
       </bpmn2:timerEventDefinition>
     </bpmn2:boundaryEvent>
     <bpmn2:boundaryEvent id="boundarytimer2" name="Timer" attachedToRef="insurance_pay" cancelActivity="true">
       <bpmn2:outgoing>flow22</bpmn2:outgoing>
       <bpmn2:outputSet id="_T2tX5WKIEemLuYD1bjHUeQ"/>
       <bpmn2:timerEventDefinition id="boundarytimer2_ED_1">
-        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_T2tX5mKIEemLuYD1bjHUeQ">P30D</bpmn2:timeDuration>
+        <bpmn2:timeDuration xsi:type="bpmn2:tFormalExpression" id="_T2tX5mKIEemLuYD1bjHUeQ">PT30S</bpmn2:timeDuration>
       </bpmn2:timerEventDefinition>
     </bpmn2:boundaryEvent>
     <bpmn2:serviceTask id="servicetask1" bpmn:exclusive="true" name="Timeout Payment" completionQuantity="1" isForCompensation="false" startQuantity="1" flowable:class="receipt.delegate.PaymentTimeoutDelegate">
@@ -113,7 +113,7 @@
       <bpmn2:outgoing>_T2tX7GKIEemLuYD1bjHUeQ</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:sequenceFlow id="_T2tX7GKIEemLuYD1bjHUeQ" sourceRef="_T2tX4WKIEemLuYD1bjHUeQ" targetRef="exclusivegateway1"/>
-    <bpmn2:exclusiveGateway id="_T2tX6GKIEemLuYD1bjHUeQ" gatewayDirection="Unspecified">
+    <bpmn2:exclusiveGateway id="_T2tX6GKIEemLuYD1bjHUeQ" gatewayDirection="Converging">
       <bpmn2:incoming>flow22</bpmn2:incoming>
       <bpmn2:incoming>flow23</bpmn2:incoming>
       <bpmn2:outgoing>_T2tX52KIEemLuYD1bjHUeQ</bpmn2:outgoing>

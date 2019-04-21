@@ -1,13 +1,18 @@
 package receipt.users;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+import org.flowable.engine.runtime.Execution;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
 import receipt.entity.Drug;
 import receipt.service.DrugService;
 import receipt.Main;
 import receipt.service.UserService;
+
+import static receipt.service.UserService.STAY_LOGGED_IN;
 
 public class Doctor extends User {
 
@@ -30,15 +35,11 @@ public class Doctor extends User {
         if (prescribed != null) {
             System.out.println("Vypisany recept na liek " + prescribed);
 
-            Main.engine
-                    .getRuntimeService()
-                    .createProcessInstanceBuilder()
-                    .processDefinitionKey("receipt_process")
-                    .variable("drug", prescribed)
-                    .start();
+            Main.engine.getRuntimeService()
+                    .startProcessInstanceByKey("receipt_process", Collections.singletonMap("drug", prescribed));
         }
 
-        return true;
+        return STAY_LOGGED_IN;
     }
 
     private boolean printRejectedReceipts(Scanner scanner) {
@@ -47,11 +48,11 @@ public class Doctor extends User {
         System.out.println("Zamietnute lieky:");
         for (int i = 0; i < rejectedReceiptTasks.size(); i++) {
             Task task = rejectedReceiptTasks.get(i);
-            Drug rejectedDrug = (Drug) task.getProcessVariables().get("drug");
+            Drug rejectedDrug = (Drug) taskService.getVariable(task.getId(), "drug");
             System.out.println(i + ": " + rejectedDrug);
         }
 
-        return true;
+        return STAY_LOGGED_IN;
     }
 
     private boolean fixRejectedReceipt(Scanner scanner) {
@@ -61,24 +62,24 @@ public class Doctor extends User {
         int receiptCode = getUserService().getActivityId(rejectedReceiptTasks.size(), scanner);
         if (receiptCode == UserService.INVALID_CODE) {
             System.out.println("Zadany kod " + receiptCode + " nieje jedno z ID zamietnutych receptov.");
-            return true;
+            return STAY_LOGGED_IN;
         }
 
         Task task = rejectedReceiptTasks.get(receiptCode);
-        Drug rejectedDrug = (Drug) task.getProcessVariables().get("drug");
+        Drug rejectedDrug = (Drug) taskService.getVariable(task.getId(), "drug");
         Drug fixed = createReceipt(scanner);
 
         if (fixed == null) {
-            Main.engine.getRuntimeService().deleteProcessInstance(task.getProcessInstanceId(), getName() + " didn't perscribe new drug.");
+            Main.engine.getRuntimeService().deleteProcessInstance(task.getProcessInstanceId(), getName() + " didn't prescribe new drug.");
             System.out.println("Liecba pre zameitnuty liek " + rejectedDrug + " bola zrusena.");
 
         } else {
-            task.getProcessVariables().put("drug", fixed);
-            Main.engine.getTaskService().complete(task.getId());
+            taskService.setVariable(task.getId(), "drug", fixed);
+            taskService.complete(task.getId());
             System.out.println("Liek " + rejectedDrug + " bol zmeneny na " + fixed);
         }
 
-        return true;
+        return STAY_LOGGED_IN;
     }
 
     /**

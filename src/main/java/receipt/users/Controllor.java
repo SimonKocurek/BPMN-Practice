@@ -8,6 +8,8 @@ import receipt.entity.Drug;
 import receipt.Main;
 import receipt.service.UserService;
 
+import static receipt.service.UserService.STAY_LOGGED_IN;
+
 public class Controllor extends User {
 
     @Override
@@ -27,11 +29,11 @@ public class Controllor extends User {
         System.out.println("Lieky na kontrolu:");
         for (int i = 0; i < checkedReceipts.size(); i++) {
             Task task = checkedReceipts.get(i);
-            Drug controlledDrug = (Drug) task.getProcessVariables().get("drug");
+            Drug controlledDrug = (Drug) taskService.getVariable(task.getId(), "drug");
             System.out.println(i + ": " + controlledDrug);
         }
 
-        return true;
+        return STAY_LOGGED_IN;
     }
 
     private boolean checkReceipt(Scanner scanner) {
@@ -41,20 +43,19 @@ public class Controllor extends User {
         int receiptCode = getUserService().getActivityId(checkedReceipts.size(), scanner);
         if (receiptCode == UserService.INVALID_CODE) {
             System.out.println("Zadany kod " + receiptCode + " nieje jedno z ID kontrolovanych receptov.");
-            return true;
+            return STAY_LOGGED_IN;
         }
 
         Task task = checkedReceipts.get(receiptCode);
-        Drug checkedDrug = (Drug) task.getProcessVariables().get("drug");
+        Drug checkedDrug = (Drug) taskService.getVariable(task.getId(), "drug");
 
-        System.out.println("Zamietnut kontrolovany liek " + checkedDrug + "? ano/nie ");
+        System.out.println("Schvalit kontrolovany liek " + checkedDrug + "? ano/nie ");
         boolean answer = getUserService().getYesNoAnswer(scanner);
 
-        task.getProcessVariables().put("check", answer);
-        Main.engine.getTaskService().complete(task.getId());
-        System.out.println("Liek " + checkedDrug + " je schvaleny: " + answer);
+        taskService.setVariable(task.getId(), "approved", answer);
+        taskService.complete(task.getId());
 
-        return true;
+        return STAY_LOGGED_IN;
     }
 
 }

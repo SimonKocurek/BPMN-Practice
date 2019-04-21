@@ -23,6 +23,8 @@ public class UserService {
      */
     public static final boolean LOGOUT_ACTION = false;
 
+    public static final boolean STAY_LOGGED_IN = true;
+
     private Map<String, User> users;
 
     private UserService() {
@@ -86,7 +88,7 @@ public class UserService {
      * @return First found int value, while discarding all other input
      */
     private int readUntilIntFound(Scanner scanner) {
-        if (!scanner.hasNext()) {
+        while (!scanner.hasNextInt()) {
             scanner.next();
         }
 
@@ -99,11 +101,21 @@ public class UserService {
      * @return Checked code, or {@code INVALID_CODE} if code is invalid
      */
     public int getActivityId(int upperBound, Scanner scanner) {
+        while (!scanner.hasNextInt()) {
+            System.out.println("Ocakava sa nezaporne cislo");
+            scanner.next();
+        }
+
         int receiptCode = scanner.nextInt();
 
         if (receiptCode < 0 || receiptCode >= upperBound) {
             return INVALID_CODE;
         }
+
+//         Clear scanner input
+//        while (scanner.hasNext()) {
+//            scanner.next();
+//        }
 
         return receiptCode;
     }
