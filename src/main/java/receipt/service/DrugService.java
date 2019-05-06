@@ -19,6 +19,8 @@ public class DrugService {
 		drugs.put("generic synthroid", new Drug("Generic Synthroid", 150));
 		drugs.put("generic norvasc", new Drug("Generic Norvasc", 90));
 		drugs.put("azithromycin", new Drug("Azithromycin", 300));
+
+		drugs.put("nic", new Drug("nic", 0));
 	}
 
 	public static DrugService getInstance() {

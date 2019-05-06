@@ -1,14 +1,13 @@
 package receipt.users;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Scanner;
-
 import org.flowable.task.api.Task;
 import receipt.Main;
 import receipt.entity.Drug;
 import receipt.service.UserService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import static receipt.service.UserService.STAY_LOGGED_IN;
 
@@ -34,8 +33,9 @@ public class Patient extends User {
         System.out.println("Lieky na zaplatenie:");
         for (int i = 0; i < pendingPayments.size(); i++) {
             Task task = pendingPayments.get(i);
-            Drug pendingDrugPayment = (Drug) taskService.getVariable(task.getId(), "drug");
-            System.out.println(i + ": " + pendingDrugPayment + " z coho pacient hradi: " + getPaidPrice(pendingDrugPayment) + "€");
+            Map<String, Object> variables = taskService.getVariables(task.getId());
+            Drug pendingDrugPayment = (Drug) variables.get("drug");
+            System.out.println(i + ": " + pendingDrugPayment + " z coho pacient hradi: " + variables.get("paymentPrice") + "€");
         }
 
         return STAY_LOGGED_IN;
@@ -52,9 +52,10 @@ public class Patient extends User {
         }
 
         Task task = pendingPayments.get(activityCode);
-        Drug pendingDrug = (Drug) taskService.getVariable(task.getId(), "drug");
+        Map<String, Object> variables = taskService.getVariables(task.getId());
+        Drug pendingDrug = (Drug) variables.get("drug");
 
-        System.out.println("Prebehla platbla " + getPaidPrice(pendingDrug) + "€");
+        System.out.println("Prebehla platbla " + variables.get("paymentPrice") + "€");
         String paymentTaskId = pendingPayments.get(activityCode).getId();
         Main.engine.getTaskService().complete(paymentTaskId);
 
@@ -88,12 +89,6 @@ public class Patient extends User {
         Main.engine.getTaskService().complete(confirmedId);
 
         return STAY_LOGGED_IN;
-    }
-
-    private BigDecimal getPaidPrice(Drug drug) {
-        BigDecimal drugPrice = BigDecimal.valueOf(drug.getPrice());
-        BigDecimal fractionPaid = BigDecimal.valueOf(3);
-        return drugPrice.divide(fractionPaid, RoundingMode.HALF_UP);
     }
 
 }

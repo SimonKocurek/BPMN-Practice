@@ -5,11 +5,6 @@
              typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath"
              targetNamespace="http://flowable.org/test">
   <process id="receipt_process" name="ReceiptProcess" isExecutable="true">
-    <userTask id="receipt_fix" name="Fix Receipt" flowable:assignee="Doctor">
-      <extensionElements>
-        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
-      </extensionElements>
-    </userTask>
     <userTask id="controllor_check" name="Controllor Check" flowable:assignee="Controllor">
       <extensionElements>
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
@@ -20,52 +15,32 @@
     <scriptTask id="insurance_pay" name="Insurance Payment" scriptFormat="javascript" flowable:autoStoreVariables="false">
       <script><![CDATA[java.lang.System.out.println("Platba poistovnou ... " + (drug.price / 3 * 2) + "€ prebehla");]]></script>
     </scriptTask>
-    <sequenceFlow id="flow9" sourceRef="parallelgateway1" targetRef="insurance_pay"></sequenceFlow>
     <parallelGateway id="parallelgateway2" name="Accept Payments"></parallelGateway>
     <userTask id="patient_pay" name="Patient Payment" flowable:assignee="Patient">
       <extensionElements>
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow15" sourceRef="parallelgateway1" targetRef="patient_pay"></sequenceFlow>
     <sequenceFlow id="flow17" sourceRef="startevent1" targetRef="_ZQbDQWRkEem8rNlhyjeRRw"></sequenceFlow>
     <userTask id="drug_received_confirm" name="Confirm Drug Received" flowable:assignee="Patient">
       <extensionElements>
         <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
       </extensionElements>
     </userTask>
-    <sequenceFlow id="flow21" sourceRef="drug_received_confirm" targetRef="_ZQbDQ2RkEem8rNlhyjeRRw"></sequenceFlow>
-    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="patient_pay" cancelActivity="true">
-      <timerEventDefinition>
-        <timeDuration>P30D</timeDuration>
-      </timerEventDefinition>
-    </boundaryEvent>
-    <boundaryEvent id="boundarytimer2" name="Timer" attachedToRef="insurance_pay" cancelActivity="true">
-      <timerEventDefinition>
-        <timeDuration>P30D</timeDuration>
-      </timerEventDefinition>
-    </boundaryEvent>
-    <serviceTask id="servicetask1" name="Timeout Payment" flowable:async="true" flowable:class="receipt.delegate.PaymentTimeoutDelegate"></serviceTask>
-    <sequenceFlow id="_3" sourceRef="servicetask1" targetRef="_ZQbDQ2RkEem8rNlhyjeRRw"></sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <startEvent id="startevent1" name="Start"></startEvent>
     <exclusiveGateway id="exclusivegateway1" name="Price check"></exclusiveGateway>
     <exclusiveGateway id="exclusivegateway2" name="Approval"></exclusiveGateway>
     <exclusiveGateway id="_2"></exclusiveGateway>
     <exclusiveGateway id="_ZQbDQWRkEem8rNlhyjeRRw"></exclusiveGateway>
-    <exclusiveGateway id="_ZQbDSWRkEem8rNlhyjeRRw"></exclusiveGateway>
-    <exclusiveGateway id="_ZQbDQ2RkEem8rNlhyjeRRw"></exclusiveGateway>
     <sequenceFlow id="flow18" name="Rejected" sourceRef="exclusivegateway2" targetRef="receipt_fix">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!approved}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow19" sourceRef="receipt_fix" targetRef="_ZQbDQWRkEem8rNlhyjeRRw"></sequenceFlow>
     <sequenceFlow id="_ZQbDT2RkEem8rNlhyjeRRw" name="Approved" sourceRef="exclusivegateway2" targetRef="_2">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow13" sourceRef="insurance_pay" targetRef="parallelgateway2"></sequenceFlow>
     <sequenceFlow id="flow16" sourceRef="patient_pay" targetRef="parallelgateway2"></sequenceFlow>
-    <sequenceFlow id="flow22" sourceRef="boundarytimer2" targetRef="_ZQbDSWRkEem8rNlhyjeRRw"></sequenceFlow>
-    <sequenceFlow id="flow23" sourceRef="boundarytimer1" targetRef="_ZQbDSWRkEem8rNlhyjeRRw"></sequenceFlow>
     <sequenceFlow id="flow20" sourceRef="parallelgateway2" targetRef="drug_received_confirm"></sequenceFlow>
     <sequenceFlow id="flow3" name="Check Required" sourceRef="exclusivegateway1" targetRef="controllor_check">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${drug.price > 100}]]></conditionExpression>
@@ -75,14 +50,38 @@
     </sequenceFlow>
     <sequenceFlow id="_4" sourceRef="_2" targetRef="parallelgateway1"></sequenceFlow>
     <sequenceFlow id="_ZQbDTmRkEem8rNlhyjeRRw" sourceRef="_ZQbDQWRkEem8rNlhyjeRRw" targetRef="exclusivegateway1"></sequenceFlow>
-    <sequenceFlow id="_ZQbDSGRkEem8rNlhyjeRRw" sourceRef="_ZQbDSWRkEem8rNlhyjeRRw" targetRef="servicetask1"></sequenceFlow>
-    <sequenceFlow id="_ZQbDS2RkEem8rNlhyjeRRw" sourceRef="_ZQbDQ2RkEem8rNlhyjeRRw" targetRef="endevent1"></sequenceFlow>
+    <endEvent id="sid-D95C2D08-46D8-469A-A96A-F06B143E603B">
+      <terminateEventDefinition></terminateEventDefinition>
+    </endEvent>
+    <sequenceFlow id="flow21" sourceRef="drug_received_confirm" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow23" sourceRef="boundarytimer1" targetRef="sid-D95C2D08-46D8-469A-A96A-F06B143E603B"></sequenceFlow>
+    <sequenceFlow id="flow9" sourceRef="parallelgateway1" targetRef="insurance_pay"></sequenceFlow>
+    <scriptTask id="sid-82832F5A-44F4-47EE-91E2-0F72AEE36FD8" name="Calculate Price" scriptFormat="javascript" flowable:autoStoreVariables="false">
+      <script><![CDATA[execution.setVariable("paymentPrice",  drug.price / 3);]]></script>
+    </scriptTask>
+    <sequenceFlow id="flow15" sourceRef="parallelgateway1" targetRef="sid-82832F5A-44F4-47EE-91E2-0F72AEE36FD8"></sequenceFlow>
+    <sequenceFlow id="sid-6F495753-41DB-478D-9640-E36801050FFB" sourceRef="sid-82832F5A-44F4-47EE-91E2-0F72AEE36FD8" targetRef="patient_pay"></sequenceFlow>
+    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="patient_pay" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>P30D</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <userTask id="receipt_fix" name="Fix Receipt" flowable:assignee="Doctor">
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-2A864A65-CD89-423A-A532-7427E5DCAB45"></exclusiveGateway>
+    <sequenceFlow id="sid-9E0499B9-0759-4DFB-A79A-62C0E06DD940" sourceRef="receipt_fix" targetRef="sid-2A864A65-CD89-423A-A532-7427E5DCAB45"></sequenceFlow>
+    <sequenceFlow id="sid-4B99FFA3-0296-4B9D-B5E0-E6D0D9E7150E" name="Cancelled" sourceRef="sid-2A864A65-CD89-423A-A532-7427E5DCAB45" targetRef="sid-D95C2D08-46D8-469A-A96A-F06B143E603B">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${drug.name == "nic"}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="sid-B792B302-153D-4EA0-9765-3B0695A1FE42" name="Changed Receipt" sourceRef="sid-2A864A65-CD89-423A-A532-7427E5DCAB45" targetRef="_ZQbDQWRkEem8rNlhyjeRRw">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${drug.name != "nic"}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_receipt_process">
     <bpmndi:BPMNPlane bpmnElement="receipt_process" id="BPMNPlane_receipt_process">
-      <bpmndi:BPMNShape bpmnElement="receipt_fix" id="BPMNShape_receipt_fix">
-        <omgdc:Bounds height="55.0" width="105.0" x="320.0" y="464.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="controllor_check" id="BPMNShape_controllor_check">
         <omgdc:Bounds height="55.0" width="105.0" x="346.0" y="317.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
@@ -90,28 +89,19 @@
         <omgdc:Bounds height="40.0" width="40.0" x="844.0" y="324.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="insurance_pay" id="BPMNShape_insurance_pay">
-        <omgdc:Bounds height="55.0" width="105.0" x="976.0" y="317.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1050.0" y="320.5"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
         <omgdc:Bounds height="40.0" width="40.0" x="1208.0" y="326.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="patient_pay" id="BPMNShape_patient_pay">
-        <omgdc:Bounds height="55.0" width="105.0" x="977.0" y="465.0"></omgdc:Bounds>
+        <omgdc:Bounds height="55.0" width="105.0" x="1065.0" y="464.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="drug_received_confirm" id="BPMNShape_drug_received_confirm">
         <omgdc:Bounds height="71.0" width="105.0" x="1316.0" y="311.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
-        <omgdc:Bounds height="31.0" width="31.0" x="1006.220932513445" y="504.782383880554"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="boundarytimer2" id="BPMNShape_boundarytimer2">
-        <omgdc:Bounds height="31.0" width="31.0" x="1005.220932513445" y="356.78238388055405"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="servicetask1" id="BPMNShape_servicetask1">
-        <omgdc:Bounds height="55.0" width="105.0" x="1317.0" y="493.0"></omgdc:Bounds>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="28.0" width="28.0" x="1597.0" y="330.0"></omgdc:Bounds>
+        <omgdc:Bounds height="28.0" width="28.0" x="1575.0" y="334.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="30.0" width="30.0" x="21.0" y="329.0"></omgdc:Bounds>
@@ -128,66 +118,78 @@
       <bpmndi:BPMNShape bpmnElement="_ZQbDQWRkEem8rNlhyjeRRw" id="BPMNShape__ZQbDQWRkEem8rNlhyjeRRw">
         <omgdc:Bounds height="40.0" width="40.0" x="123.0" y="324.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_ZQbDSWRkEem8rNlhyjeRRw" id="BPMNShape__ZQbDSWRkEem8rNlhyjeRRw">
-        <omgdc:Bounds height="40.0" width="40.0" x="1231.0" y="501.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="sid-D95C2D08-46D8-469A-A96A-F06B143E603B" id="BPMNShape_sid-D95C2D08-46D8-469A-A96A-F06B143E603B">
+        <omgdc:Bounds height="28.0" width="28.0" x="1050.6177290668857" y="585.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_ZQbDQ2RkEem8rNlhyjeRRw" id="BPMNShape__ZQbDQ2RkEem8rNlhyjeRRw">
-        <omgdc:Bounds height="40.0" width="40.0" x="1507.0" y="328.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="sid-82832F5A-44F4-47EE-91E2-0F72AEE36FD8" id="BPMNShape_sid-82832F5A-44F4-47EE-91E2-0F72AEE36FD8">
+        <omgdc:Bounds height="51.0" width="94.0" x="920.0" y="462.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="31.0" width="31.0" x="1049.3892425092058" y="497.59810044358915"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="receipt_fix" id="BPMNShape_receipt_fix">
+        <omgdc:Bounds height="55.0" width="105.0" x="320.0" y="464.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-2A864A65-CD89-423A-A532-7427E5DCAB45" id="BPMNShape_sid-2A864A65-CD89-423A-A532-7427E5DCAB45">
+        <omgdc:Bounds height="40.0" width="40.0" x="123.0" y="471.5"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
         <omgdi:waypoint x="50.94999840413678" y="344.0"></omgdi:waypoint>
         <omgdi:waypoint x="123.0" y="344.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-6F495753-41DB-478D-9640-E36801050FFB" id="BPMNEdge_sid-6F495753-41DB-478D-9640-E36801050FFB">
+        <omgdi:waypoint x="1013.9499999999996" y="489.09186046511627"></omgdi:waypoint>
+        <omgdi:waypoint x="1064.999999999999" y="490.27906976744185"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
         <omgdi:waypoint x="574.0" y="363.9432646860229"></omgdi:waypoint>
         <omgdi:waypoint x="574.0" y="492.0"></omgdi:waypoint>
         <omgdi:waypoint x="424.95000000000005" y="491.6301488833748"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
-        <omgdi:waypoint x="319.9999999999782" y="491.6142701525055"></omgdi:waypoint>
-        <omgdi:waypoint x="143.0" y="492.0"></omgdi:waypoint>
-        <omgdi:waypoint x="143.0" y="363.90671061528064"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="sid-B792B302-153D-4EA0-9765-3B0695A1FE42" id="BPMNEdge_sid-B792B302-153D-4EA0-9765-3B0695A1FE42">
+        <omgdi:waypoint x="143.4322033898305" y="471.93220338983053"></omgdi:waypoint>
+        <omgdi:waypoint x="143.0671717171717" y="363.83980795148244"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
-        <omgdi:waypoint x="1080.9499999999928" y="344.8943609022556"></omgdi:waypoint>
-        <omgdi:waypoint x="1208.1049229239184" y="345.85074626865674"></omgdi:waypoint>
+        <omgdi:waypoint x="1154.95" y="348.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1181.5" y="348.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1181.5" y="346.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1208.0" y="346.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
-        <omgdi:waypoint x="864.0" y="363.9433098591549"></omgdi:waypoint>
-        <omgdi:waypoint x="864.0" y="493.0"></omgdi:waypoint>
-        <omgdi:waypoint x="976.9999999999939" y="492.65845921450153"></omgdi:waypoint>
+        <omgdi:waypoint x="864.0" y="363.94312335731826"></omgdi:waypoint>
+        <omgdi:waypoint x="864.0" y="488.95625"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="488.95625"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
-        <omgdi:waypoint x="1029.8564935064935" y="465.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1030.0" y="454.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1227.0" y="455.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1227.8181818181818" y="365.7686363636364"></omgdi:waypoint>
+        <omgdi:waypoint x="1169.95" y="491.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1227.0" y="491.5"></omgdi:waypoint>
+        <omgdi:waypoint x="1227.863481228669" y="365.8138225255973"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_ZQbDT2RkEem8rNlhyjeRRw" id="BPMNEdge__ZQbDT2RkEem8rNlhyjeRRw">
         <omgdi:waypoint x="593.9437303579537" y="344.0"></omgdi:waypoint>
         <omgdi:waypoint x="713.0" y="344.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-9E0499B9-0759-4DFB-A79A-62C0E06DD940" id="BPMNEdge_sid-9E0499B9-0759-4DFB-A79A-62C0E06DD940">
+        <omgdi:waypoint x="320.0" y="491.5"></omgdi:waypoint>
+        <omgdi:waypoint x="162.90432650392336" y="491.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_ZQbDTmRkEem8rNlhyjeRRw" id="BPMNEdge__ZQbDTmRkEem8rNlhyjeRRw">
         <omgdi:waypoint x="162.9363543091655" y="344.0"></omgdi:waypoint>
         <omgdi:waypoint x="196.0" y="344.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_ZQbDS2RkEem8rNlhyjeRRw" id="BPMNEdge__ZQbDS2RkEem8rNlhyjeRRw">
-        <omgdi:waypoint x="1546.04318181818" y="347.09090909090907"></omgdi:waypoint>
-        <omgdi:waypoint x="1597.0155571456369" y="344.6635476344174"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_3" id="BPMNEdge__3">
-        <omgdi:waypoint x="1421.95" y="520.7775132275133"></omgdi:waypoint>
-        <omgdi:waypoint x="1464.0" y="521.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1465.0" y="348.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1507.0" y="348.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_4" id="BPMNEdge__4">
-        <omgdi:waypoint x="752.9423913043478" y="344.0"></omgdi:waypoint>
-        <omgdi:waypoint x="844.0" y="344.0"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="sid-4B99FFA3-0296-4B9D-B5E0-E6D0D9E7150E" id="BPMNEdge_sid-4B99FFA3-0296-4B9D-B5E0-E6D0D9E7150E">
+        <omgdi:waypoint x="143.5" y="510.9411531279178"></omgdi:waypoint>
+        <omgdi:waypoint x="143.5" y="599.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1050.6177290668857" y="599.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
         <omgdi:waypoint x="235.89007373020203" y="344.0545081967214"></omgdi:waypoint>
         <omgdi:waypoint x="345.9999999999963" y="344.35616438356163"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="BPMNEdge__4">
+        <omgdi:waypoint x="752.9423913043478" y="344.0"></omgdi:waypoint>
+        <omgdi:waypoint x="844.0" y="344.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="450.949999999975" y="344.35042735042737"></omgdi:waypoint>
@@ -204,26 +206,18 @@
         <omgdi:waypoint x="1315.9999999999889" y="346.31316725978644"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
-        <omgdi:waypoint x="1420.9499999999973" y="346.99637223974764"></omgdi:waypoint>
-        <omgdi:waypoint x="1507.144597126794" y="347.81250000000006"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
-        <omgdi:waypoint x="1025.617087468696" y="386.9379391386777"></omgdi:waypoint>
-        <omgdi:waypoint x="1040.0" y="430.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1251.0" y="431.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1251.0" y="501.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
-        <omgdi:waypoint x="883.883540278619" y="344.0604545454545"></omgdi:waypoint>
-        <omgdi:waypoint x="975.9999999999822" y="344.3404255319149"></omgdi:waypoint>
+        <omgdi:waypoint x="1420.95" y="346.85680272108846"></omgdi:waypoint>
+        <omgdi:waypoint x="1575.0000830485692" y="347.90476406324876"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
-        <omgdi:waypoint x="1037.17084779837" y="520.3307405337619"></omgdi:waypoint>
-        <omgdi:waypoint x="1231.0170547865168" y="520.9375976985237"></omgdi:waypoint>
+        <omgdi:waypoint x="1064.8402513017686" y="528.5480249071031"></omgdi:waypoint>
+        <omgdi:waypoint x="1064.6618211525167" y="585.0000688103925"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_ZQbDSGRkEem8rNlhyjeRRw" id="BPMNEdge__ZQbDSGRkEem8rNlhyjeRRw">
-        <omgdi:waypoint x="1270.8661764705432" y="520.9159663865546"></omgdi:waypoint>
-        <omgdi:waypoint x="1316.9999999999877" y="520.7213080168776"></omgdi:waypoint>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="883.940324927255" y="344.0"></omgdi:waypoint>
+        <omgdi:waypoint x="967.0" y="344.0"></omgdi:waypoint>
+        <omgdi:waypoint x="967.0" y="348.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1049.9999999999304" y="348.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

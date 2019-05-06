@@ -1,12 +1,12 @@
 package receipt.users;
 
-import java.util.List;
-import java.util.Scanner;
-
 import org.flowable.task.api.Task;
 import receipt.entity.Drug;
-import receipt.Main;
 import receipt.service.UserService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import static receipt.service.UserService.STAY_LOGGED_IN;
 
@@ -47,13 +47,14 @@ public class Controllor extends User {
         }
 
         Task task = checkedReceipts.get(receiptCode);
-        Drug checkedDrug = (Drug) taskService.getVariable(task.getId(), "drug");
+        Map<String, Object> variables = taskService.getVariables(task.getId());
+        Drug checkedDrug = (Drug) variables.get("drug");
 
         System.out.println("Schvalit kontrolovany liek " + checkedDrug + "? ano/nie ");
         boolean answer = getUserService().getYesNoAnswer(scanner);
 
-        taskService.setVariable(task.getId(), "approved", answer);
-        taskService.complete(task.getId());
+        variables.put("approved", answer);
+        taskService.complete(task.getId(), variables);
 
         return STAY_LOGGED_IN;
     }

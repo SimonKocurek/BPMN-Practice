@@ -1,16 +1,15 @@
 package receipt.users;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
-
-import org.flowable.engine.runtime.Execution;
-import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
+import receipt.Main;
 import receipt.entity.Drug;
 import receipt.service.DrugService;
-import receipt.Main;
 import receipt.service.UserService;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import static receipt.service.UserService.STAY_LOGGED_IN;
 
@@ -66,18 +65,13 @@ public class Doctor extends User {
         }
 
         Task task = rejectedReceiptTasks.get(receiptCode);
-        Drug rejectedDrug = (Drug) taskService.getVariable(task.getId(), "drug");
+        Map<String, Object> variables = taskService.getVariables(task.getId());
+        Drug rejectedDrug = (Drug) variables.get("drug");
         Drug fixed = createReceipt(scanner);
 
-        if (fixed == null) {
-            Main.engine.getRuntimeService().deleteProcessInstance(task.getProcessInstanceId(), getName() + " didn't prescribe new drug.");
-            System.out.println("Liecba pre zameitnuty liek " + rejectedDrug + " bola zrusena.");
-
-        } else {
-            taskService.setVariable(task.getId(), "drug", fixed);
-            taskService.complete(task.getId());
-            System.out.println("Liek " + rejectedDrug + " bol zmeneny na " + fixed);
-        }
+        variables.put("drug", fixed);
+        taskService.complete(task.getId(), variables);
+        System.out.println("Liek " + rejectedDrug + " bol zmeneny na " + fixed);
 
         return STAY_LOGGED_IN;
     }
@@ -95,10 +89,6 @@ public class Doctor extends User {
             System.out.print("Liek s nazvom " + drugName + "sa nenasiel. "
                     + "Prosim zadaj iny nazov, alebo 'nic', ak chcete zrusit predpis receptu: ");
             drugName = scanner.nextLine();
-
-            if ("nic".equals(drugName)) {
-                return null;
-            }
         }
 
         return drugs.findByName(drugName);
